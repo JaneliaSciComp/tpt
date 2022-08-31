@@ -506,3 +506,27 @@ class LockFile:
 
     def have_lock(self):
         return self._have_lock    
+
+
+
+def run_remote_subprocess_and_return_stdout(user_name, host_name, remote_command_line_as_list) :
+    '''
+    Run the system command, but taking a list of tokens rather than a string, and
+    running on a remote host.  Uses ssh, which needs to be set up for passowrdless
+    login as the indicated user.
+    Each element of command_line_as_list is escaped for bash, then composed into a
+    single string, then submitted to system_with_error_handling().
+    '''
+
+    # Escape all the elements of command_line_as_list
+    escaped_remote_command_line_as_list = [shlex.quote(el) for el in remote_command_line_as_list] 
+    
+    # Build up the command line by adding space between elements
+    remote_command_line = space_out(escaped_remote_command_line_as_list)
+
+    # Command line
+    command_line_as_list = ['ssh', '-l', user_name, host_name, remote_command_line] ; 
+    
+    # Actually run the command
+    stdout = run_subprocess_and_return_stdout(command_line_as_list)
+    return stdout
