@@ -559,7 +559,7 @@ def copy_local_repository_to_single_user_account(user_name, repository_folder_pa
 
 
 
-def copy_github_repository_into_user_home_folders(url, username_from_user_index) :
+def clone_and_copy_github_repository_into_user_home_folders(url, username_from_user_index) :
     # Get the repo name
     repository_name = os.path.basename(url)
 
