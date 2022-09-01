@@ -8,6 +8,9 @@ import datetime
 import ast
 import copy
 import shlex
+import stat
+import tempfile
+
 
 
 class cd:
@@ -533,3 +536,55 @@ def run_remote_subprocess_and_return_stdout(user_name, host_name, remote_command
     # Actually run the command
     stdout = run_subprocess_and_return_stdout(command_line_as_list)
     return stdout
+
+
+
+def error_if_uncommited_changes(repo_path) :
+    with cd(repo_path) as _ :
+        stdout = run_subprocess_and_return_stdout(['git', 'status', '--porcelain=v1']) 
+        trimmed_stdout = stdout.strip()  # Will be empty if no uncomitted changes
+        if isladen(trimmed_stdout) :
+            raise RuntimeError('The git repo seems to have uncommitted changes:\n%s' % stdout) 
+
+
+
+def copy_local_repository_to_single_user_account(user_name, repository_folder_path):
+    # Copy the folder over
+    host_name = 'login2'   # Why not?
+    repository_name = os.path.basename(repository_folder_path)
+    printf('Copying %s into the %s user account...' % (repository_name, user_name) )
+    run_remote_subprocess_and_return_stdout(user_name, host_name, ['rm', '-rf', repository_name]) 
+    run_remote_subprocess_and_return_stdout(user_name, host_name, ['cp', '-R', '-T', repository_folder_path, repository_name]) 
+    printf('done.\n') 
+
+
+
+def copy_github_repository_into_user_home_folders(url, username_from_user_index) :
+    # Get the repo name
+    repository_name = os.path.basename(url)
+
+    # Determine the folder path of this script
+    this_script_path = os.path.realpath(__file__)
+    script_folder_path = os.path.dirname(this_script_path)
+
+    # Create a temporary folder
+    with tempfile.TemporaryDirectory(dir=script_folder_path) as temp_folder_path :
+        # Make the temp folder world-readable
+        os.chmod(temp_folder_path, 
+                 stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+
+        with cd(temp_folder_path) as _ :
+            # Clone the repo
+            run_subprocess_and_return_code_and_stdout(
+                ['git', 'clone', '--recurse-submodules', url] )
+
+            # Determine the cloned repo folder path
+            repository_folder_path = os.path.join(temp_folder_path, repository_name)
+    
+            # Copy into all the given user account home folders
+            for user_index in range(len(username_from_user_index)) :
+                username = username_from_user_index[user_index]
+                copy_local_repository_to_single_user_account(username, repository_folder_path)
+
+            # If get here, everything went well
+            printf('Successfully copied %s into all the *lab/*robot user accounts\n' % repository_name) 
