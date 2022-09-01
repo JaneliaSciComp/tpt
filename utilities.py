@@ -7,7 +7,7 @@ import io
 import datetime
 import ast
 import copy
-
+import shlex
 
 
 class cd:
@@ -110,10 +110,13 @@ def run_subprocess_and_return_stdout(command_as_list, shell=False) :
                        stdout=subprocess.PIPE,
                        stderr=subprocess.STDOUT,
                        encoding='utf-8',
-                       check=True, 
+                       check=False, 
                        shell=shell)
     stdout = completed_process.stdout
-    #print('Result: %s' % result)                   
+    return_code = completed_process.returncode
+    if return_code != 0 :
+        raise RuntimeError('Command %s returned nonzero return code %d.\nStdout/stderr:\n%s\n' 
+                           % (str(command_as_list), return_code, stdout) )
     return stdout
 
 
