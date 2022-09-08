@@ -52,15 +52,6 @@ def listmap(f, lst) :
 
 
 
-def abspath_relative_to_transfero(path) :
-    this_script_path = os.path.realpath(__file__)
-    this_script_folder_path = os.path.dirname(this_script_path)
-    with cd(this_script_folder_path) as _:
-        result = os.path.realpath(os.path.abspath(path))
-    return result
-
-
-
 def get_git_report(source_repo_folder_path) :
     with cd(source_repo_folder_path) as _ :
         # Get the Python version
