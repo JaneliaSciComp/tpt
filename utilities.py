@@ -430,27 +430,27 @@ class spinner_object :
         if not self.is_mute :
             if self.is_first_call :
                 cursor = self.cursors[self.cursor_index]
-                printf(cursor) 
+                printfe(cursor) 
                 self.is_first_call = False 
             else :
-                printf('\b')
+                printfe('\b')
                 self.cursor_index = (self.cursor_index + 1) 
                 if self.cursor_index >= self.cursor_count :
                     self.cursor_index = 0 
                 cursor = self.cursors[self.cursor_index]
-                printf(cursor)
+                printfe(cursor)
 
     def print(self, *varargin) :
         # Want things printed during spinning to look nice
         if not self.is_mute :
-            printf('\b\n')   # Delete cursor, then newline
-            printf(*varargin)   # print whatever
+            printfe('\b\n')   # Delete cursor, then newline
+            printfe(*varargin)   # print whatever
             cursor = self.cursors[self.cursor_index]   # get the same cursor back
-            printf(cursor)   # write it again on its own line
+            printfe(cursor)   # write it again on its own line
 
     def stop(self) :
         if not self.is_mute :
-            printf('\bdone.\n')
+            printfe('\bdone.\n')
 
 
 
@@ -485,11 +485,11 @@ class progress_bar_object :
                 delete_bar = ''.join(['\b'] * (1+50+1+2+4+1)) 
                 printf(delete_bar) 
             bar = ''.join(['*'] * round(percent/2))
-            printf('[%-50s]: %4.1f%%' % (bar, percent_as_displayed)) 
+            printfe('[%-50s]: %4.1f%%' % (bar, percent_as_displayed)) 
             self.did_print_at_least_one_line_ = True 
         if i==n :
             if not self.did_print_final_newline_ :
-                printf('\n') 
+                printfe('\n') 
                 self.did_print_final_newline_ = True 
         self.percent_as_displayed_last_ = percent_as_displayed 
 
