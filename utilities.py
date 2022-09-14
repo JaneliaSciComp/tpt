@@ -483,7 +483,7 @@ class progress_bar_object :
         if percent_as_displayed != self.percent_as_displayed_last_ :
             if self.did_print_at_least_one_line_ :
                 delete_bar = ''.join(['\b'] * (1+50+1+2+4+1)) 
-                printf(delete_bar) 
+                printfe(delete_bar) 
             bar = ''.join(['*'] * round(percent/2))
             printfe('[%-50s]: %4.1f%%' % (bar, percent_as_displayed)) 
             self.did_print_at_least_one_line_ = True 
