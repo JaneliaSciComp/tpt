@@ -329,8 +329,6 @@ def bwait(job_ids, maximum_wait_time=math.inf, do_show_progress_bar=True) :
             time.sleep(10) 
             is_time_up = (toc(ticId) > maximum_wait_time) 
         last_exited_job_count = exited_job_count 
-    if do_show_progress_bar :
-        progress_bar.finish_up() 
     return job_statuses
 
 

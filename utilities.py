@@ -93,8 +93,27 @@ def get_git_report(source_repo_folder_path) :
 
 
 
-def printf(*args) :
-    print(*args, end='')
+def printf(*args, **kwargs) :
+    '''
+    print() but without the newline.
+    '''
+    print(*args, end='', **kwargs)
+
+
+
+def printe(*args, **kwargs):
+    '''
+    print() but to stderr.
+    '''
+    print(*args, file=sys.stderr, **kwargs)
+
+
+
+def printfe(*args, **kwargs):
+    '''
+    print() but to stderr, and without the newline.
+    '''
+    print(*args, file=sys.stderr, end='', **kwargs)
 
 
 
@@ -102,16 +121,33 @@ def run_subprocess_and_return_stdout(command_as_list, shell=False) :
     completed_process = \
         subprocess.run(command_as_list, 
                        stdout=subprocess.PIPE,
-                       stderr=subprocess.STDOUT,
                        encoding='utf-8',
                        check=False, 
                        shell=shell)
-    stdout = completed_process.stdout
+    stdout = completed_process.stdout    
     return_code = completed_process.returncode
     if return_code != 0 :
-        raise RuntimeError('Command %s returned nonzero return code %d.\nStdout/stderr:\n%s\n' 
+        raise RuntimeError('Command %s returned nonzero return code %d.\nstdout:\n%s\n' 
                            % (str(command_as_list), return_code, stdout) )
     return stdout
+
+
+
+def run_subprocess_and_return_stdout_and_stderr(command_as_list, shell=False) :
+    completed_process = \
+        subprocess.run(command_as_list, 
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE, 
+                       encoding='utf-8',
+                       check=False, 
+                       shell=shell)
+    stdout = completed_process.stdout    
+    stderr = completed_process.stderr    
+    return_code = completed_process.returncode
+    if return_code != 0 :
+        raise RuntimeError('Command %s returned nonzero return code %d.\nstdout:\n%s\nstderr:\n%s\n' 
+                           % (str(command_as_list), return_code, stdout, stderr) )
+    return (stdout, stderr)
 
 
 
@@ -119,7 +155,6 @@ def run_subprocess_and_return_code_and_stdout(command_as_list, shell=False) :
     completed_process = \
         subprocess.run(command_as_list, 
                        stdout=subprocess.PIPE,
-                       stderr=subprocess.STDOUT,
                        encoding='utf-8',
                        check=False, 
                        shell=shell)
@@ -130,7 +165,27 @@ def run_subprocess_and_return_code_and_stdout(command_as_list, shell=False) :
 
 
 
+def run_subprocess_and_return_code_and_stdout_and_stderr(command_as_list, shell=False) :
+    completed_process = \
+        subprocess.run(command_as_list, 
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE,
+                       encoding='utf-8',
+                       check=False, 
+                       shell=shell)
+    stdout = completed_process.stdout
+    stderr = completed_process.stderr    
+    return_code = completed_process.returncode
+    #print('Result: %s' % result)                   
+    return (return_code, stdout, stderr)
+
+
+
 def run_subprocess_and_return_code(command_as_list, shell=False) :
+    '''
+    Run the subprocess, with stdout/stderr going to those of the parent process.
+    Return the return code.  *Don't* throw an exception for a nonzero return code.
+    '''
     completed_process = \
         subprocess.run(command_as_list, 
                        check=False, 
@@ -138,6 +193,19 @@ def run_subprocess_and_return_code(command_as_list, shell=False) :
     return_code = completed_process.returncode
     #print('Result: %s' % result)                   
     return return_code
+
+
+
+def run_subprocess(command_as_list, shell=False) :
+    '''
+    Run the subprocess, with stdout/stderr going to those of the parent process.
+    Throw an exception if there's a problem, otherwise return without 
+    returning anything.
+    '''
+    completed_process = \
+        subprocess.run(command_as_list, 
+                       check=True, 
+                       shell=shell)
 
 
 
