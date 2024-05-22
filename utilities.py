@@ -618,7 +618,7 @@ def copy_local_repository_to_single_user_account(user_name, repository_folder_pa
 
 
 
-def clone_and_copy_github_repository_into_user_home_folders(url, username_from_user_index) :
+def clone_and_copy_github_repository_into_user_home_folders(url, username_from_user_index, branch_name='main') :
     # Get the repo name
     repository_name = os.path.basename(url)
 
@@ -635,7 +635,7 @@ def clone_and_copy_github_repository_into_user_home_folders(url, username_from_u
         with cd(temp_folder_path) as _ :
             # Clone the repo
             run_subprocess_and_return_code_and_stdout(
-                ['git', 'clone', '--recurse-submodules', url] )
+                ['git', 'clone', '-b', branch_name, '--recurse-submodules', url] )
 
             # Determine the cloned repo folder path
             repository_folder_path = os.path.join(temp_folder_path, repository_name)
