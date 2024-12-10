@@ -647,3 +647,24 @@ def clone_and_copy_github_repository_into_user_home_folders(url, username_from_u
 
             # If get here, everything went well
             printf('Successfully copied %s into all the *lab/*robot user accounts\n' % repository_name) 
+
+
+
+def process_tristate_arg_pair(do, nodo, name):
+    '''
+    Used to resolve switch-pairs like --log and --no-log.  Takes in both (boolean) values, and the base name (e.g. 'log'), 
+    returns a single value that is one of {True, False, None}.  Errors if both do and nodo are True.  Otherwise, if do is 
+    True returns True, and if nodo is True returns False.  Returns None if both are False.
+    '''
+    if do :
+        if nodo :
+            raise RuntimeError('Arguments --%s and --no-%s are mutually exclusive' % (name, name))
+        else :
+            result = True
+    else :
+        if nodo :
+            result = False
+        else :
+            result = None
+    return result
+    
